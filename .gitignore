@@ -6,6 +6,10 @@ xsim.dir/
 *.wdb
 dfx_runtime.txt
 
+# Python bytecode
+__pycache__/
+*.pyc
+
 # OS artifacts
 .DS_Store
 Thumbs.db
