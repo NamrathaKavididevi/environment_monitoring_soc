@@ -1,0 +1,974 @@
+$date
+   Fri Nov 20 22:20:36 2026
+$end
+
+$version
+  2025.1.0
+$end
+
+$timescale
+  1ps
+$end
+
+$scope module tb_axi_interconnect $end
+$var reg 1 S! clk $end
+$var reg 1 T! rst_n $end
+$var reg 32 U! s_axi_awaddr [31:0] $end
+$var reg 1 V! s_axi_awvalid $end
+$var wire 1 W! s_axi_awready $end
+$var reg 32 X! s_axi_wdata [31:0] $end
+$var reg 4 Y! s_axi_wstrb [3:0] $end
+$var reg 1 Z! s_axi_wvalid $end
+$var wire 1 [! s_axi_wready $end
+$var wire 2 \! s_axi_bresp [1:0] $end
+$var wire 1 ]! s_axi_bvalid $end
+$var reg 1 ^! s_axi_bready $end
+$var reg 32 _! s_axi_araddr [31:0] $end
+$var reg 1 `! s_axi_arvalid $end
+$var wire 1 a! s_axi_arready $end
+$var wire 32 b! s_axi_rdata [31:0] $end
+$var wire 2 c! s_axi_rresp [1:0] $end
+$var wire 1 d! s_axi_rvalid $end
+$var reg 1 e! s_axi_rready $end
+$var wire 32 4 m0_axi_awaddr [31:0] $end
+$var wire 1 5 m0_axi_awvalid $end
+$var reg 1 f! m0_axi_awready $end
+$var wire 32 7 m0_axi_wdata [31:0] $end
+$var wire 4 8 m0_axi_wstrb [3:0] $end
+$var wire 1 9 m0_axi_wvalid $end
+$var reg 1 g! m0_axi_wready $end
+$var reg 2 h! m0_axi_bresp [1:0] $end
+$var reg 1 i! m0_axi_bvalid $end
+$var wire 1 = m0_axi_bready $end
+$var wire 32 > m0_axi_araddr [31:0] $end
+$var wire 1 ? m0_axi_arvalid $end
+$var reg 1 j! m0_axi_arready $end
+$var reg 32 k! m0_axi_rdata [31:0] $end
+$var reg 2 l! m0_axi_rresp [1:0] $end
+$var reg 1 m! m0_axi_rvalid $end
+$var wire 1 D m0_axi_rready $end
+$var wire 32 E m1_axi_awaddr [31:0] $end
+$var wire 1 F m1_axi_awvalid $end
+$var reg 1 n! m1_axi_awready $end
+$var wire 32 H m1_axi_wdata [31:0] $end
+$var wire 4 I m1_axi_wstrb [3:0] $end
+$var wire 1 J m1_axi_wvalid $end
+$var reg 1 o! m1_axi_wready $end
+$var reg 2 p! m1_axi_bresp [1:0] $end
+$var reg 1 q! m1_axi_bvalid $end
+$var wire 1 N m1_axi_bready $end
+$var wire 32 O m1_axi_araddr [31:0] $end
+$var wire 1 P m1_axi_arvalid $end
+$var reg 1 r! m1_axi_arready $end
+$var reg 32 s! m1_axi_rdata [31:0] $end
+$var reg 2 t! m1_axi_rresp [1:0] $end
+$var reg 1 u! m1_axi_rvalid $end
+$var wire 1 U m1_axi_rready $end
+$var wire 32 V m2_axi_awaddr [31:0] $end
+$var wire 1 W m2_axi_awvalid $end
+$var reg 1 v! m2_axi_awready $end
+$var wire 32 Y m2_axi_wdata [31:0] $end
+$var wire 4 Z m2_axi_wstrb [3:0] $end
+$var wire 1 [ m2_axi_wvalid $end
+$var reg 1 w! m2_axi_wready $end
+$var reg 2 x! m2_axi_bresp [1:0] $end
+$var reg 1 y! m2_axi_bvalid $end
+$var wire 1 _ m2_axi_bready $end
+$var wire 32 ` m2_axi_araddr [31:0] $end
+$var wire 1 a m2_axi_arvalid $end
+$var reg 1 z! m2_axi_arready $end
+$var reg 32 {! m2_axi_rdata [31:0] $end
+$var reg 2 |! m2_axi_rresp [1:0] $end
+$var reg 1 }! m2_axi_rvalid $end
+$var wire 1 f m2_axi_rready $end
+$var wire 32 g m3_axi_awaddr [31:0] $end
+$var wire 1 h m3_axi_awvalid $end
+$var reg 1 ~! m3_axi_awready $end
+$var wire 32 j m3_axi_wdata [31:0] $end
+$var wire 4 k m3_axi_wstrb [3:0] $end
+$var wire 1 l m3_axi_wvalid $end
+$var reg 1 !" m3_axi_wready $end
+$var reg 2 "" m3_axi_bresp [1:0] $end
+$var reg 1 #" m3_axi_bvalid $end
+$var wire 1 p m3_axi_bready $end
+$var wire 32 q m3_axi_araddr [31:0] $end
+$var wire 1 r m3_axi_arvalid $end
+$var reg 1 $" m3_axi_arready $end
+$var reg 32 %" m3_axi_rdata [31:0] $end
+$var reg 2 &" m3_axi_rresp [1:0] $end
+$var reg 1 '" m3_axi_rvalid $end
+$var wire 1 w m3_axi_rready $end
+$var wire 32 x m4_axi_awaddr [31:0] $end
+$var wire 1 y m4_axi_awvalid $end
+$var reg 1 (" m4_axi_awready $end
+$var wire 32 { m4_axi_wdata [31:0] $end
+$var wire 4 | m4_axi_wstrb [3:0] $end
+$var wire 1 } m4_axi_wvalid $end
+$var reg 1 )" m4_axi_wready $end
+$var reg 2 *" m4_axi_bresp [1:0] $end
+$var reg 1 +" m4_axi_bvalid $end
+$var wire 1 #! m4_axi_bready $end
+$var wire 32 $! m4_axi_araddr [31:0] $end
+$var wire 1 %! m4_axi_arvalid $end
+$var reg 1 ," m4_axi_arready $end
+$var reg 32 -" m4_axi_rdata [31:0] $end
+$var reg 2 ." m4_axi_rresp [1:0] $end
+$var reg 1 /" m4_axi_rvalid $end
+$var wire 1 *! m4_axi_rready $end
+$var wire 32 +! m5_axi_awaddr [31:0] $end
+$var wire 1 ,! m5_axi_awvalid $end
+$var reg 1 0" m5_axi_awready $end
+$var wire 32 .! m5_axi_wdata [31:0] $end
+$var wire 4 /! m5_axi_wstrb [3:0] $end
+$var wire 1 0! m5_axi_wvalid $end
+$var reg 1 1" m5_axi_wready $end
+$var reg 2 2" m5_axi_bresp [1:0] $end
+$var reg 1 3" m5_axi_bvalid $end
+$var wire 1 4! m5_axi_bready $end
+$var wire 32 5! m5_axi_araddr [31:0] $end
+$var wire 1 6! m5_axi_arvalid $end
+$var reg 1 4" m5_axi_arready $end
+$var reg 32 5" m5_axi_rdata [31:0] $end
+$var reg 2 6" m5_axi_rresp [1:0] $end
+$var reg 1 7" m5_axi_rvalid $end
+$var wire 1 ;! m5_axi_rready $end
+$var wire 32 <! m6_axi_awaddr [31:0] $end
+$var wire 1 =! m6_axi_awvalid $end
+$var reg 1 8" m6_axi_awready $end
+$var wire 32 ?! m6_axi_wdata [31:0] $end
+$var wire 4 @! m6_axi_wstrb [3:0] $end
+$var wire 1 A! m6_axi_wvalid $end
+$var reg 1 9" m6_axi_wready $end
+$var reg 2 :" m6_axi_bresp [1:0] $end
+$var reg 1 ;" m6_axi_bvalid $end
+$var wire 1 E! m6_axi_bready $end
+$var wire 32 F! m6_axi_araddr [31:0] $end
+$var wire 1 G! m6_axi_arvalid $end
+$var reg 1 <" m6_axi_arready $end
+$var reg 32 =" m6_axi_rdata [31:0] $end
+$var reg 2 >" m6_axi_rresp [1:0] $end
+$var reg 1 ?" m6_axi_rvalid $end
+$var wire 1 L! m6_axi_rready $end
+$var integer 32 @" test_errors [31:0] $end
+$var integer 32 A" test_passes [31:0] $end
+$var reg 32 B" rdata [31:0] $end
+$var reg 2 C" rresp [1:0] $end
+$var parameter 32 D" ADDR_WIDTH [31:0] $end
+$var parameter 32 E" DATA_WIDTH [31:0] $end
+$var parameter 32 F" CLK_PERIOD [31:0] $end
+$scope module dut $end
+$var wire 1 ! clk $end
+$var wire 1 " rst_n $end
+$var wire 32 # s_axi_awaddr [31:0] $end
+$var wire 1 $ s_axi_awvalid $end
+$var reg 1 % s_axi_awready $end
+$var wire 32 & s_axi_wdata [31:0] $end
+$var wire 4 ' s_axi_wstrb [3:0] $end
+$var wire 1 ( s_axi_wvalid $end
+$var reg 1 ) s_axi_wready $end
+$var reg 2 * s_axi_bresp [1:0] $end
+$var reg 1 + s_axi_bvalid $end
+$var wire 1 , s_axi_bready $end
+$var wire 32 - s_axi_araddr [31:0] $end
+$var wire 1 . s_axi_arvalid $end
+$var reg 1 / s_axi_arready $end
+$var reg 32 0 s_axi_rdata [31:0] $end
+$var reg 2 1 s_axi_rresp [1:0] $end
+$var reg 1 2 s_axi_rvalid $end
+$var wire 1 3 s_axi_rready $end
+$var wire 32 4 m0_axi_awaddr [31:0] $end
+$var wire 1 5 m0_axi_awvalid $end
+$var wire 1 6 m0_axi_awready $end
+$var wire 32 7 m0_axi_wdata [31:0] $end
+$var wire 4 8 m0_axi_wstrb [3:0] $end
+$var wire 1 9 m0_axi_wvalid $end
+$var wire 1 : m0_axi_wready $end
+$var wire 2 ; m0_axi_bresp [1:0] $end
+$var wire 1 < m0_axi_bvalid $end
+$var wire 1 = m0_axi_bready $end
+$var wire 32 > m0_axi_araddr [31:0] $end
+$var wire 1 ? m0_axi_arvalid $end
+$var wire 1 @ m0_axi_arready $end
+$var wire 32 A m0_axi_rdata [31:0] $end
+$var wire 2 B m0_axi_rresp [1:0] $end
+$var wire 1 C m0_axi_rvalid $end
+$var wire 1 D m0_axi_rready $end
+$var wire 32 E m1_axi_awaddr [31:0] $end
+$var wire 1 F m1_axi_awvalid $end
+$var wire 1 G m1_axi_awready $end
+$var wire 32 H m1_axi_wdata [31:0] $end
+$var wire 4 I m1_axi_wstrb [3:0] $end
+$var wire 1 J m1_axi_wvalid $end
+$var wire 1 K m1_axi_wready $end
+$var wire 2 L m1_axi_bresp [1:0] $end
+$var wire 1 M m1_axi_bvalid $end
+$var wire 1 N m1_axi_bready $end
+$var wire 32 O m1_axi_araddr [31:0] $end
+$var wire 1 P m1_axi_arvalid $end
+$var wire 1 Q m1_axi_arready $end
+$var wire 32 R m1_axi_rdata [31:0] $end
+$var wire 2 S m1_axi_rresp [1:0] $end
+$var wire 1 T m1_axi_rvalid $end
+$var wire 1 U m1_axi_rready $end
+$var wire 32 V m2_axi_awaddr [31:0] $end
+$var wire 1 W m2_axi_awvalid $end
+$var wire 1 X m2_axi_awready $end
+$var wire 32 Y m2_axi_wdata [31:0] $end
+$var wire 4 Z m2_axi_wstrb [3:0] $end
+$var wire 1 [ m2_axi_wvalid $end
+$var wire 1 \ m2_axi_wready $end
+$var wire 2 ] m2_axi_bresp [1:0] $end
+$var wire 1 ^ m2_axi_bvalid $end
+$var wire 1 _ m2_axi_bready $end
+$var wire 32 ` m2_axi_araddr [31:0] $end
+$var wire 1 a m2_axi_arvalid $end
+$var wire 1 b m2_axi_arready $end
+$var wire 32 c m2_axi_rdata [31:0] $end
+$var wire 2 d m2_axi_rresp [1:0] $end
+$var wire 1 e m2_axi_rvalid $end
+$var wire 1 f m2_axi_rready $end
+$var wire 32 g m3_axi_awaddr [31:0] $end
+$var wire 1 h m3_axi_awvalid $end
+$var wire 1 i m3_axi_awready $end
+$var wire 32 j m3_axi_wdata [31:0] $end
+$var wire 4 k m3_axi_wstrb [3:0] $end
+$var wire 1 l m3_axi_wvalid $end
+$var wire 1 m m3_axi_wready $end
+$var wire 2 n m3_axi_bresp [1:0] $end
+$var wire 1 o m3_axi_bvalid $end
+$var wire 1 p m3_axi_bready $end
+$var wire 32 q m3_axi_araddr [31:0] $end
+$var wire 1 r m3_axi_arvalid $end
+$var wire 1 s m3_axi_arready $end
+$var wire 32 t m3_axi_rdata [31:0] $end
+$var wire 2 u m3_axi_rresp [1:0] $end
+$var wire 1 v m3_axi_rvalid $end
+$var wire 1 w m3_axi_rready $end
+$var wire 32 x m4_axi_awaddr [31:0] $end
+$var wire 1 y m4_axi_awvalid $end
+$var wire 1 z m4_axi_awready $end
+$var wire 32 { m4_axi_wdata [31:0] $end
+$var wire 4 | m4_axi_wstrb [3:0] $end
+$var wire 1 } m4_axi_wvalid $end
+$var wire 1 ~ m4_axi_wready $end
+$var wire 2 !! m4_axi_bresp [1:0] $end
+$var wire 1 "! m4_axi_bvalid $end
+$var wire 1 #! m4_axi_bready $end
+$var wire 32 $! m4_axi_araddr [31:0] $end
+$var wire 1 %! m4_axi_arvalid $end
+$var wire 1 &! m4_axi_arready $end
+$var wire 32 '! m4_axi_rdata [31:0] $end
+$var wire 2 (! m4_axi_rresp [1:0] $end
+$var wire 1 )! m4_axi_rvalid $end
+$var wire 1 *! m4_axi_rready $end
+$var wire 32 +! m5_axi_awaddr [31:0] $end
+$var wire 1 ,! m5_axi_awvalid $end
+$var wire 1 -! m5_axi_awready $end
+$var wire 32 .! m5_axi_wdata [31:0] $end
+$var wire 4 /! m5_axi_wstrb [3:0] $end
+$var wire 1 0! m5_axi_wvalid $end
+$var wire 1 1! m5_axi_wready $end
+$var wire 2 2! m5_axi_bresp [1:0] $end
+$var wire 1 3! m5_axi_bvalid $end
+$var wire 1 4! m5_axi_bready $end
+$var wire 32 5! m5_axi_araddr [31:0] $end
+$var wire 1 6! m5_axi_arvalid $end
+$var wire 1 7! m5_axi_arready $end
+$var wire 32 8! m5_axi_rdata [31:0] $end
+$var wire 2 9! m5_axi_rresp [1:0] $end
+$var wire 1 :! m5_axi_rvalid $end
+$var wire 1 ;! m5_axi_rready $end
+$var wire 32 <! m6_axi_awaddr [31:0] $end
+$var wire 1 =! m6_axi_awvalid $end
+$var wire 1 >! m6_axi_awready $end
+$var wire 32 ?! m6_axi_wdata [31:0] $end
+$var wire 4 @! m6_axi_wstrb [3:0] $end
+$var wire 1 A! m6_axi_wvalid $end
+$var wire 1 B! m6_axi_wready $end
+$var wire 2 C! m6_axi_bresp [1:0] $end
+$var wire 1 D! m6_axi_bvalid $end
+$var wire 1 E! m6_axi_bready $end
+$var wire 32 F! m6_axi_araddr [31:0] $end
+$var wire 1 G! m6_axi_arvalid $end
+$var wire 1 H! m6_axi_arready $end
+$var wire 32 I! m6_axi_rdata [31:0] $end
+$var wire 2 J! m6_axi_rresp [1:0] $end
+$var wire 1 K! m6_axi_rvalid $end
+$var wire 1 L! m6_axi_rready $end
+$var wire 4 M! wr_target [3:0] $end
+$var reg 4 N! wr_target_latched [3:0] $end
+$var reg 1 O! wr_decerr_pending $end
+$var wire 4 P! rd_target [3:0] $end
+$var reg 4 Q! rd_target_latched [3:0] $end
+$var reg 1 R! rd_decerr_pending $end
+$scope function decode_addr $end
+$upscope $end
+$upscope $end
+$scope task axi_read $end
+$upscope $end
+$upscope $end
+$enddefinitions $end
+
+#0
+$dumpvars
+0!
+b0 !!
+0!"
+0"
+0"!
+b0 ""
+b0 #
+0#!
+0#"
+0$
+b0 $!
+0$"
+0%
+0%!
+b0 %"
+b0 &
+0&!
+b0 &"
+b0 '
+b0 '!
+0'"
+0(
+b0 (!
+0("
+0)
+0)!
+0)"
+b0 *
+0*!
+b0 *"
+0+
+b0 +!
+0+"
+0,
+0,!
+0,"
+b0 -
+0-!
+b0 -"
+0.
+b0 .!
+b0 ."
+0/
+b0 /!
+0/"
+b0 0
+00!
+00"
+b0 1
+01!
+01"
+02
+b0 2!
+b0 2"
+03
+03!
+03"
+b0 4
+04!
+04"
+05
+b0 5!
+b0 5"
+06
+06!
+b0 6"
+b0 7
+07!
+07"
+b0 8
+b0 8!
+08"
+09
+b0 9!
+09"
+0:
+0:!
+b0 :"
+b0 ;
+0;!
+0;"
+0<
+b0 <!
+0<"
+0=
+0=!
+b0 ="
+b0 >
+0>!
+b0 >"
+0?
+b0 ?!
+0?"
+0@
+b0 @!
+b0 @"
+b0 A
+0A!
+b0 A"
+b0 B
+0B!
+bx B"
+0C
+b0 C!
+bx C"
+0D
+0D!
+b100000 D"
+b0 E
+0E!
+b100000 E"
+0F
+b0 F!
+b1010 F"
+0G
+0G!
+b0 H
+0H!
+b0 I
+b0 I!
+0J
+b0 J!
+0K
+0K!
+b0 L
+0L!
+0M
+b0 M!
+0N
+b0 N!
+b0 O
+0O!
+0P
+b0 P!
+0Q
+b0 Q!
+b0 R
+0R!
+b0 S
+0S!
+0T
+0T!
+0U
+b0 U!
+b0 V
+0V!
+0W
+0W!
+0X
+b0 X!
+b0 Y
+b0 Y!
+b0 Z
+0Z!
+0[
+0[!
+0\
+b0 \!
+b0 ]
+0]!
+0^
+0^!
+0_
+b0 _!
+b0 `
+0`!
+0a
+0a!
+0b
+b0 b!
+b0 c
+b0 c!
+b0 d
+0d!
+0e
+0e!
+0f
+0f!
+b0 g
+0g!
+0h
+b0 h!
+0i
+0i!
+b0 j
+0j!
+b0 k
+b0 k!
+0l
+b0 l!
+0m
+0m!
+b0 n
+0n!
+0o
+0o!
+0p
+b0 p!
+b0 q
+0q!
+0r
+0r!
+0s
+b0 s!
+b0 t
+b0 t!
+b0 u
+0u!
+0v
+0v!
+0w
+0w!
+b0 x
+b0 x!
+0y
+0y!
+0z
+0z!
+b0 {
+b0 {!
+b0 |
+b0 |!
+0}
+0}!
+0~
+0~!
+$end
+
+#5000
+1!
+1S!
+
+#10000
+0!
+0S!
+
+#15000
+1!
+1S!
+
+#20000
+0!
+0S!
+
+#25000
+1!
+1S!
+
+#30000
+0!
+0S!
+
+#35000
+1!
+1S!
+
+#40000
+0!
+0S!
+
+#45000
+1!
+1S!
+
+#50000
+0!
+1"
+0S!
+1T!
+
+#55000
+1!
+1S!
+
+#60000
+0!
+0S!
+
+#65000
+1!
+1S!
+
+#70000
+0!
+0S!
+
+#75000
+1!
+b100000000 $!
+b100000000 -
+1.
+13
+b100000000 5!
+b100000000 >
+1?
+1D
+b100000000 F!
+b100000000 O
+1S!
+b100000000 _!
+b100000000 `
+1`!
+1e!
+b100000000 q
+
+#80000
+0!
+0S!
+
+#85000
+1!
+1/
+1@
+1S!
+1a!
+1j!
+
+#90000
+0!
+0S!
+
+#95000
+1!
+b10101010101010100000000000000000 0
+12
+b10101010101010100000000000000000 A
+1C
+1S!
+b10101010101010100000000000000000 b!
+1d!
+b10101010101010100000000000000000 k!
+1m!
+
+#100000
+0!
+0S!
+
+#105000
+1!
+0.
+0?
+1S!
+0`!
+
+#110000
+0!
+0S!
+
+#115000
+1!
+0/
+02
+03
+0@
+b1 A"
+b10101010101010100000000000000000 B"
+0C
+b0 C"
+0D
+1S!
+0a!
+0d!
+0e!
+0j!
+0m!
+
+#120000
+0!
+0S!
+
+#125000
+1!
+b1000000000000000000000000000100 $!
+b1000000000000000000000000000100 -
+1.
+13
+b1000000000000000000000000000100 5!
+b1000000000000000000000000000100 >
+1D
+b1000000000000000000000000000100 F!
+b1000000000000000000000000000100 O
+1P
+b1 P!
+1S!
+b1000000000000000000000000000100 _!
+b1000000000000000000000000000100 `
+1`!
+1e!
+b1000000000000000000000000000100 q
+
+#130000
+0!
+0S!
+
+#135000
+1!
+1/
+1Q
+1S!
+1a!
+1r!
+
+#140000
+0!
+0S!
+
+#145000
+1!
+b10111011101110110000000000000001 0
+12
+0D
+b1 Q!
+b10111011101110110000000000000001 R
+1S!
+1T
+1U
+b10111011101110110000000000000001 b!
+1d!
+b10111011101110110000000000000001 s!
+1u!
+
+#150000
+0!
+0S!
+
+#155000
+1!
+0.
+0P
+1S!
+0`!
+
+#160000
+0!
+0S!
+
+#165000
+1!
+0/
+02
+03
+b10 A"
+b10111011101110110000000000000001 B"
+0Q
+1S!
+0T
+0U
+0a!
+0d!
+0e!
+0r!
+0u!
+
+#170000
+0!
+0S!
+
+#175000
+1!
+b1000000000000001010000000000100 $!
+b1000000000000001010000000000100 -
+1.
+13
+b1000000000000001010000000000100 5!
+b1000000000000001010000000000100 >
+b1000000000000001010000000000100 F!
+1G!
+b1000000000000001010000000000100 O
+b110 P!
+1S!
+1U
+b1000000000000001010000000000100 _!
+b1000000000000001010000000000100 `
+1`!
+1e!
+b1000000000000001010000000000100 q
+
+#180000
+0!
+0S!
+
+#185000
+1!
+1/
+1<"
+1H!
+1S!
+1a!
+
+#190000
+0!
+0S!
+
+#195000
+1!
+b10001000100010000000000000110 0
+12
+b10001000100010000000000000110 ="
+1?"
+b10001000100010000000000000110 I!
+1K!
+1L!
+b110 Q!
+1S!
+0U
+b10001000100010000000000000110 b!
+1d!
+
+#200000
+0!
+0S!
+
+#205000
+1!
+0.
+0G!
+1S!
+0`!
+
+#210000
+0!
+0S!
+
+#215000
+1!
+0/
+02
+03
+0<"
+0?"
+b11 A"
+b10001000100010000000000000110 B"
+0H!
+0K!
+0L!
+1S!
+0a!
+0d!
+0e!
+
+#220000
+0!
+0S!
+
+#225000
+1!
+b1000000000000001100000000000000 $!
+b1000000000000001100000000000000 -
+1.
+1/
+13
+b1000000000000001100000000000000 5!
+b1000000000000001100000000000000 >
+b1000000000000001100000000000000 F!
+1L!
+b1000000000000001100000000000000 O
+b111 P!
+1S!
+b1000000000000001100000000000000 _!
+b1000000000000001100000000000000 `
+1`!
+1a!
+1e!
+b1000000000000001100000000000000 q
+
+#230000
+0!
+0S!
+
+#235000
+1!
+b11011110101011011101111010101101 0
+b11 1
+12
+0L!
+b111 Q!
+1R!
+1S!
+b11011110101011011101111010101101 b!
+b11 c!
+1d!
+
+#240000
+0!
+0S!
+
+#245000
+1!
+0.
+1S!
+0`!
+
+#250000
+0!
+0S!
+
+#255000
+1!
+02
+03
+b100 A"
+b11011110101011011101111010101101 B"
+b11 C"
+0R!
+1S!
+0d!
+0e!
+
+#260000
+0!
+0S!
+
+#265000
+1!
+b10000000000000000000000000000000 $!
+b10000000000000000000000000000000 -
+1.
+13
+b10000000000000000000000000000000 5!
+b10000000000000000000000000000000 >
+b10000000000000000000000000000000 F!
+b10000000000000000000000000000000 O
+1S!
+b10000000000000000000000000000000 _!
+b10000000000000000000000000000000 `
+1`!
+1e!
+b10000000000000000000000000000000 q
+
+#270000
+0!
+0S!
+
+#275000
+1!
+0.
+12
+1R!
+1S!
+0`!
+1d!
+
+#280000
+0!
+0S!
+
+#285000
+1!
+02
+0R!
+1S!
+0d!
+
+#290000
+0!
+0S!
+
+#295000
+1!
+b101 A"
+1S!

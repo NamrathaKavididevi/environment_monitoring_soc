@@ -2,7 +2,7 @@
 `define UART_DRIVER_SV
 
 class uart_driver extends uvm_driver #(uart_item);
-  virtual uart_if.DRV vif;
+  virtual uart_if vif;
 
   `uvm_component_utils(uart_driver)
 
@@ -12,7 +12,7 @@ class uart_driver extends uvm_driver #(uart_item);
 
   function void build_phase(uvm_phase phase);
     super.build_phase(phase);
-    if (!uvm_config_db#(virtual uart_if.DRV)::get(this, "", "vif", vif))
+    if (!uvm_config_db#(virtual uart_if)::get(this, "", "vif", vif))
       `uvm_fatal("NOVIF", {"Cannot get virtual interface for ", get_full_name()})
   endfunction
 

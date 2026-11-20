@@ -25,8 +25,8 @@ module uart_tb_top;
 
   // UVM configuration and test launch
   initial begin
-    uvm_config_db#(virtual uart_if.DRV)::set(null, "*.agt.drv", "vif", vif);
-    uvm_config_db#(virtual uart_if.MON)::set(null, "*.agt.mon", "vif", vif);
+    uvm_config_db#(virtual uart_if)::set(null, "*.agt.drv", "vif", vif);
+    uvm_config_db#(virtual uart_if)::set(null, "*.agt.mon", "vif", vif);
     run_test("uart_base_test");
   end
 

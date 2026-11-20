@@ -2,7 +2,7 @@
 `define UART_MONITOR_SV
 
 class uart_monitor extends uvm_monitor;
-  virtual uart_if.MON vif;
+  virtual uart_if vif;
   uvm_analysis_port #(uart_item) ap;
 
   `uvm_component_utils(uart_monitor)
@@ -14,7 +14,7 @@ class uart_monitor extends uvm_monitor;
   function void build_phase(uvm_phase phase);
     super.build_phase(phase);
     ap = new("ap", this);
-    if (!uvm_config_db#(virtual uart_if.MON)::get(this, "", "vif", vif))
+    if (!uvm_config_db#(virtual uart_if)::get(this, "", "vif", vif))
       `uvm_fatal("NOVIF", {"Cannot get virtual interface for ", get_full_name()})
   endfunction
 
