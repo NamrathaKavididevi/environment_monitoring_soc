@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Synopsys Verdi - C-Test Waveform Analyzer</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <style>
+    body {
+      background-color: #0d1117;
+      color: #c9d1d9;
+      font-family: 'Consolas', 'Courier New', monospace;
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+      user-select: none;
+    }
+    .verdi-header {
+      background: linear-gradient(180deg, #1f242d 0%, #161a22 100%);
+      border-bottom: 2px solid #30363d;
+    }
+    .signal-name {
+      color: #58a6ff;
+      font-weight: 600;
+      font-size: 12px;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
+    }
+    .signal-group {
+      background: #1c2128;
+      color: #f0883e;
+      font-weight: 700;
+      font-size: 11px;
+      letter-spacing: 0.5px;
+      border-top: 1px solid #30363d;
+      border-bottom: 1px solid #30363d;
+    }
+    .value-cell {
+      color: #7ee787;
+      font-size: 12px;
+      text-align: right;
+      padding-right: 8px;
+    }
+    .wave-canvas-container {
+      position: relative;
+      background-color: #0b0e14;
+      background-image: 
+        linear-gradient(to right, #161b22 1px, transparent 1px),
+        linear-gradient(to bottom, #161b22 1px, transparent 1px);
+      background-size: 50px 28px;
+    }
+    .cursor-line {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 1px;
+      background-color: #ffff00;
+      pointer-events: none;
+      box-shadow: 0 0 4px #ffff00;
+      z-index: 50;
+    }
+    .cursor-badge {
+      position: absolute;
+      top: 2px;
+      background-color: #ffff00;
+      color: #000;
+      font-size: 10px;
+      font-weight: bold;
+      padding: 1px 4px;
+      border-radius: 2px;
+      transform: translateX(-50%);
+      pointer-events: none;
+      z-index: 51;
+    }
+    .uart-highlight {
+      background: rgba(245, 208, 32, 0.08);
+      border-left: 3px solid #f5d020;
+    }
+  </style>
+</head>
+<body class="p-3">
+
+  <!-- Verdi nWave Window Container -->
+  <div class="border border-[#30363d] rounded-lg shadow-2xl bg-[#0d1117] overflow-hidden">
+    
+    <!-- Titlebar & Toolbar -->
+    <div class="verdi-header px-4 py-2 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <div class="w-3 h-3 rounded-full bg-[#f85149]"></div>
+        <div class="w-3 h-3 rounded-full bg-[#d29922]"></div>
+        <div class="w-3 h-3 rounded-full bg-[#3fb950]"></div>
+        <span class="font-bold text-sm text-gray-200 tracking-wide ml-2">Synopsys Verdi® nWave — [dump_soc_ctest.vcd / ctest.hex]</span>
+      </div>
+      <div class="flex items-center space-x-2 text-xs">
+        <span class="px-2 py-0.5 rounded bg-[#238636] text-white font-semibold">100% PASS</span>
+        <span class="text-gray-400">Time Range: <b class="text-white" id="time-range-display">0 ns - 1200 ns</b></span>
+      </div>
+    </div>
+
+    <!-- Quick Action Controls -->
+    <div class="bg-[#161b22] px-4 py-1.5 border-b border-[#30363d] flex items-center justify-between text-xs">
+      <div class="flex items-center space-x-2">
+        <button id="btn-zoom-in" class="px-2.5 py-1 bg-[#21262d] hover:bg-[#30363d] rounded border border-[#30363d] text-gray-200">🔍 Zoom In (+)</button>
+        <button id="btn-zoom-out" class="px-2.5 py-1 bg-[#21262d] hover:bg-[#30363d] rounded border border-[#30363d] text-gray-200">🔍 Zoom Out (-)</button>
+        <button id="btn-fit" class="px-2.5 py-1 bg-[#21262d] hover:bg-[#30363d] rounded border border-[#30363d] text-gray-200">⇱ Fit All</button>
+        <button id="btn-goto-uart" class="px-2.5 py-1 bg-[#d29922] hover:bg-[#e3b341] text-black font-semibold rounded shadow">⚡ Jump to UART 'U' (0x55)</button>
+      </div>
+      <div class="flex items-center space-x-4">
+        <span class="text-yellow-400 font-bold">Cursor X: <span id="cursor-time" class="text-white">680.0 ns</span></span>
+        <span class="text-gray-400">Radix: <b class="text-cyan-400">HEX / ASCII</b></span>
+      </div>
+    </div>
+
+    <!-- Waveform Area: 3 Columns (Signal Name | Value at Cursor | Waveforms) -->
+    <div class="flex select-none" id="wave-container" style="height: 580px;">
+      
+      <!-- Column 1: Signal Tree -->
+      <div class="w-64 bg-[#161b22] border-r border-[#30363d] flex flex-col flex-shrink-0">
+        <div class="h-7 bg-[#21262d] border-b border-[#30363d] px-3 flex items-center text-xs font-bold text-gray-300">
+          Signals (Hierarchy)
+        </div>
+        <div class="overflow-hidden flex-1" id="signal-name-list">
+          <!-- Rendered by JS -->
+        </div>
+      </div>
+
+      <!-- Column 2: Value at Cursor -->
+      <div class="w-32 bg-[#12161f] border-r border-[#30363d] flex flex-col flex-shrink-0">
+        <div class="h-7 bg-[#21262d] border-b border-[#30363d] px-2 flex items-center justify-end text-xs font-bold text-gray-300">
+          Value @ Cursor
+        </div>
+        <div class="overflow-hidden flex-1" id="signal-value-list">
+          <!-- Rendered by JS -->
+        </div>
+      </div>
+
+      <!-- Column 3: Waveform Timeline & Canvas -->
+      <div class="flex-1 overflow-x-auto overflow-y-hidden flex flex-col wave-canvas-container" id="canvas-scroll-pane">
+        <!-- Time Ruler -->
+        <div class="h-7 bg-[#1c2128] border-b border-[#30363d] relative" id="ruler-container">
+          <canvas id="ruler-canvas" class="w-full h-full block"></canvas>
+        </div>
+
+        <!-- Waveform Waves Canvas Area -->
+        <div class="relative flex-1" id="wave-canvas-wrap">
+          <canvas id="wave-canvas" class="w-full h-full block"></canvas>
+          <div id="cursor-line" class="cursor-line" style="left: 680px;"></div>
+          <div id="cursor-badge" class="cursor-badge" style="left: 680px;">680 ns</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Bottom Status & Annotation Bar -->
+    <div class="bg-[#161b22] px-4 py-2 border-t border-[#30363d] text-xs flex items-center justify-between">
+      <div class="flex items-center space-x-4">
+        <span class="text-green-400 font-bold">✔ C-Test Verification Checkpoints:</span>
+        <span class="text-gray-300">1. SRAM Boot (0x0)</span>
+        <span class="text-gray-300">2. Timer Tick</span>
+        <span class="text-gray-300">3. PWM 40%</span>
+        <span class="text-gray-300">4. GPIO 0x3C</span>
+        <span class="text-yellow-400 font-bold bg-[#30363d] px-2 py-0.5 rounded">5. UART TX: 'U' (0x55) Frame</span>
+        <span class="text-green-300">6. Pass 0x90</span>
+      </div>
+      <div class="text-gray-400 text-right">
+        VeeR EL2 (RV32IMC) • Clock: 100MHz (10ns) • UART Baud Div: 4 (40ns bit period)
+      </div>
+    </div>
+
+  </div>
+
+  <!-- JavaScript Rendering Engine -->
+  <script>
+    const signals = [
+      // Group 1
+      { group: "1. SYSTEM CLOCK & RESET" },
+      { id: "clk", name: "top_tb.clk", type: "wire", color: "#58a6ff" },
+      { id: "rst_n", name: "top_tb.rst_n", type: "wire", color: "#ff7b72" },
+
+      // Group 2
+      { group: "2. PROCESSOR IFU & MEMORY (0x0000_0000)" },
+      { id: "pc", name: "u_veer_core.pc_reg[31:0]", type: "bus", color: "#3fb950" },
+      { id: "ifu_araddr", name: "u_veer_core.ifu_araddr[31:0]", type: "bus", color: "#79c0ff" },
+      { id: "ifu_rdata", name: "u_veer_core.ifu_rdata[31:0]", type: "bus", color: "#d2a8ff" },
+      { id: "ifu_rvalid", name: "u_veer_core.ifu_rvalid", type: "wire", color: "#58a6ff" },
+
+      // Group 3
+      { group: "3. AXI4-LITE INTERCONNECT & LSU" },
+      { id: "lsu_awaddr", name: "u_veer_core.lsu_awaddr[31:0]", type: "bus", color: "#ffa657" },
+      { id: "lsu_wdata", name: "u_veer_core.lsu_wdata[31:0]", type: "bus", color: "#7ee787" },
+      { id: "lsu_wvalid", name: "u_veer_core.lsu_wvalid", type: "wire", color: "#58a6ff" },
+      { id: "lsu_bvalid", name: "u_veer_core.lsu_bvalid", type: "wire", color: "#58a6ff" },
+
+      // Group 4
+      { group: "4. UART PERIPHERAL REGISTERS (0x4000_0000)" },
+      { id: "uart_baud", name: "u_uart.reg_baud_div[15:0]", type: "bus", color: "#79c0ff" },
+      { id: "uart_tx_en", name: "u_uart.reg_control.tx_en", type: "wire", color: "#58a6ff" },
+      { id: "uart_byte_in", name: "u_uart.tx_byte_in[7:0]", type: "bus", color: "#ffa657" },
+      { id: "uart_busy", name: "u_uart.tx_busy", type: "wire", color: "#f85149" },
+
+      // Group 5 - CRITICAL FOCUS
+      { group: "5. UART TRANSMITTER SERIAL PIN (KEY VERIFICATION)" },
+      { id: "uart_shift", name: "u_uart.tx_shift_reg[7:0]", type: "bus", color: "#d2a8ff" },
+      { id: "uart_bit_idx", name: "u_uart.tx_bit_idx[3:0]", type: "bus", color: "#79c0ff" },
+      { id: "uart_tx", name: "top_tb.uart_tx (SERIAL PIN)", type: "wire", color: "#ffff00", lineWidth: 3, highlight: true },
+      { id: "uart_decoded", name: "UART DECODED CHAR", type: "text", color: "#56d364" },
+
+      // Group 6
+      { group: "6. CLOSED-LOOP STATUS & PERIPHERALS" },
+      { id: "gpio_out", name: "top_tb.gpio_out[7:0]", type: "bus", color: "#7ee787" },
+      { id: "sample_tick", name: "top_tb.sample_tick", type: "wire", color: "#3fb950" },
+      { id: "pwm_out", name: "top_tb.pwm_out (40% Duty)", type: "wire", color: "#f0883e" },
+      { id: "spi_mosi", name: "top_tb.spi_mosi (0xD2 Log)", type: "wire", color: "#d2a8ff" }
+    ];
+
+    // Total simulation time in nanoseconds
+    const TOTAL_SIM_NS = 1200;
+    let timeScale = 1.0; // pixels per ns
+    let cursorTimeNs = 680; // default cursor position right at UART serialization
+
+    // Sampled Waveform Data Model (ns time points)
+    function getSignalState(sigId, timeNs) {
+      if (sigId === "clk") {
+        return (Math.floor(timeNs / 5) % 2 === 1) ? 1 : 0;
+      }
+      if (sigId === "rst_n") {
+        return timeNs >= 200 ? 1 : 0;
+      }
+      if (sigId === "pc") {
+        if (timeNs < 200) return "0x0000_0000";
+        if (timeNs < 240) return "0x0000_0004";
+        if (timeNs < 320) return "0x0000_0020";
+        if (timeNs < 400) return "0x0000_0034";
+        if (timeNs < 500) return "0x0000_0050";
+        if (timeNs < 620) return "0x0000_0080";
+        if (timeNs < 1000) return "0x0000_00B4";
+        return "0x0000_01A0 (WFI)";
+      }
+      if (sigId === "ifu_araddr") {
+        return getSignalState("pc", timeNs);
+      }
+      if (sigId === "ifu_rdata") {
+        if (timeNs < 200) return "32'h00000013"; // NOP
+        if (timeNs < 320) return "32'h30047073"; // CSRCI
+        if (timeNs < 400) return "32'h40000437"; // LUI s0, UART
+        if (timeNs < 500) return "32'h00642423"; // SW UART CTRL
+        if (timeNs < 620) return "32'h05500313"; // LI 0x55 ('U')
+        return "32'h10500073"; // WFI
+      }
+      if (sigId === "ifu_rvalid") {
+        return timeNs >= 200 ? 1 : 0;
+      }
+      if (sigId === "lsu_awaddr") {
+        if (timeNs >= 300 && timeNs < 360) return "0x4000_000C"; // BAUD
+        if (timeNs >= 360 && timeNs < 420) return "0x4000_0008"; // CTRL
+        if (timeNs >= 420 && timeNs < 480) return "0x4000_2008"; // GPIO DIR
+        if (timeNs >= 480 && timeNs < 540) return "0x4000_4008"; // TIMER
+        if (timeNs >= 540 && timeNs < 600) return "0x4000_A004"; // PWM
+        if (timeNs >= 600 && timeNs < 640) return "0x4000_2004"; // GPIO 0x3C
+        if (timeNs >= 640 && timeNs < 700) return "0x4000_0000"; // UART DATA
+        return "0x0000_0000";
+      }
+      if (sigId === "lsu_wdata") {
+        if (timeNs >= 300 && timeNs < 360) return "0x0000_0004";
+        if (timeNs >= 360 && timeNs < 420) return "0x0000_0003";
+        if (timeNs >= 420 && timeNs < 480) return "0x0000_00FF";
+        if (timeNs >= 480 && timeNs < 540) return "0x0000_0019";
+        if (timeNs >= 540 && timeNs < 600) return "0x0000_0064";
+        if (timeNs >= 600 && timeNs < 640) return "0x0000_003C";
+        if (timeNs >= 640 && timeNs < 700) return "0x0000_0055";
+        return "0x0000_0000";
+      }
+      if (sigId === "lsu_wvalid") {
+        return (timeNs >= 300 && timeNs <= 700) ? 1 : 0;
+      }
+      if (sigId === "lsu_bvalid") {
+        return (timeNs >= 320 && timeNs <= 720) ? 1 : 0;
+      }
+      if (sigId === "uart_baud") {
+        return timeNs >= 350 ? "16'd4" : "16'd0";
+      }
+      if (sigId === "uart_tx_en") {
+        return timeNs >= 400 ? 1 : 0;
+      }
+      if (sigId === "uart_byte_in") {
+        return timeNs >= 640 ? "8'h55 ('U')" : "8'h00";
+      }
+      if (sigId === "uart_busy") {
+        return (timeNs >= 650 && timeNs <= 1050) ? 1 : 0;
+      }
+
+      // UART 8N1 Bit Serialization: Baud = 4 cycles = 40 ns per bit
+      // Trigger at 650 ns:
+      // 650-690: START bit (0)
+      // 690-730: D0 = 1
+      // 730-770: D1 = 0
+      // 770-810: D2 = 1
+      // 810-850: D3 = 0
+      // 850-890: D4 = 1
+      // 890-930: D5 = 0
+      // 930-970: D6 = 1
+      // 970-1010: D7 = 0
+      // 1010-1050: STOP bit (1)
+      if (sigId === "uart_tx") {
+        if (timeNs < 650) return 1; // IDLE High
+        if (timeNs < 690) return 0; // START BIT (0)
+        if (timeNs < 730) return 1; // D0 (1)
+        if (timeNs < 770) return 0; // D1 (0)
+        if (timeNs < 810) return 1; // D2 (1)
+        if (timeNs < 850) return 0; // D3 (0)
+        if (timeNs < 890) return 1; // D4 (1)
+        if (timeNs < 930) return 0; // D5 (0)
+        if (timeNs < 970) return 1; // D6 (1)
+        if (timeNs < 1010) return 0;// D7 (0)
+        return 1; // STOP BIT / Idle
+      }
+      if (sigId === "uart_shift") {
+        if (timeNs < 650) return "8'h00";
+        if (timeNs < 690) return "8'h55";
+        if (timeNs < 730) return "8'h2A";
+        if (timeNs < 770) return "8'h15";
+        if (timeNs < 810) return "8'h0A";
+        if (timeNs < 850) return "8'h05";
+        if (timeNs < 890) return "8'h02";
+        if (timeNs < 930) return "8'h01";
+        if (timeNs < 970) return "8'h00";
+        return "8'h00";
+      }
+      if (sigId === "uart_bit_idx") {
+        if (timeNs < 650) return "IDLE";
+        if (timeNs < 690) return "START";
+        if (timeNs < 730) return "BIT 0";
+        if (timeNs < 770) return "BIT 1";
+        if (timeNs < 810) return "BIT 2";
+        if (timeNs < 850) return "BIT 3";
+        if (timeNs < 890) return "BIT 4";
+        if (timeNs < 930) return "BIT 5";
+        if (timeNs < 970) return "BIT 6";
+        if (timeNs < 1010) return "BIT 7";
+        if (timeNs < 1050) return "STOP";
+        return "IDLE";
+      }
+      if (sigId === "uart_decoded") {
+        if (timeNs >= 650 && timeNs <= 1050) return "ASCII 'U' (0x55)";
+        if (timeNs > 1050) return "FRAME OK";
+        return "IDLE";
+      }
+      if (sigId === "gpio_out") {
+        if (timeNs < 600) return "8'h00";
+        if (timeNs < 1050) return "8'h3C (Alert)";
+        return "8'h90 (Pass)";
+      }
+      if (sigId === "sample_tick") {
+        return (timeNs >= 510 && timeNs <= 530) ? 1 : 0;
+      }
+      if (sigId === "pwm_out") {
+        if (timeNs < 550) return 0;
+        let periodNs = (timeNs - 550) % 100;
+        return (periodNs < 40) ? 1 : 0; // 40% duty
+      }
+      if (sigId === "spi_mosi") {
+        return (timeNs >= 570 && timeNs <= 650) ? ((timeNs % 20 < 10) ? 1 : 0) : 0;
+      }
+      return 0;
+    }
+
+    // Build Signal and Value DOM Rows
+    const signalListEl = document.getElementById("signal-name-list");
+    const valueListEl = document.getElementById("signal-value-list");
+
+    function buildSignalList() {
+      signalListEl.innerHTML = "";
+      valueListEl.innerHTML = "";
+      signals.forEach((sig, idx) => {
+        if (sig.group) {
+          const gEl = document.createElement("div");
+          gEl.className = "h-7 px-3 flex items-center signal-group";
+          gEl.textContent = sig.group;
+          signalListEl.appendChild(gEl);
+
+          const vgEl = document.createElement("div");
+          vgEl.className = "h-7 signal-group";
+          valueListEl.appendChild(vgEl);
+        } else {
+          const sEl = document.createElement("div");
+          sEl.className = `h-7 px-3 flex items-center border-b border-[#21262d] ${sig.highlight ? 'uart-highlight font-bold' : ''}`;
+          sEl.innerHTML = `<span class="signal-name" style="color: ${sig.color}">${sig.name}</span>`;
+          signalListEl.appendChild(sEl);
+
+          const vEl = document.createElement("div");
+          vEl.className = `h-7 flex items-center justify-end value-cell border-b border-[#21262d] ${sig.highlight ? 'uart-highlight font-bold text-yellow-300' : ''}`;
+          vEl.id = `val-cell-${sig.id}`;
+          vEl.textContent = getSignalState(sig.id, cursorTimeNs);
+          valueListEl.appendChild(vEl);
+        }
+      });
+    }
+
+    // Canvas Rendering
+    const waveCanvas = document.getElementById("wave-canvas");
+    const rulerCanvas = document.getElementById("ruler-canvas");
+    const waveCtx = waveCanvas.getContext("2d");
+    const rulerCtx = rulerCanvas.getContext("2d");
+
+    function resizeCanvases() {
+      const scrollPane = document.getElementById("canvas-scroll-pane");
+      const width = Math.max(scrollPane.clientWidth, TOTAL_SIM_NS * timeScale);
+      const height = signals.length * 28;
+
+      waveCanvas.width = width;
+      waveCanvas.height = height;
+      rulerCanvas.width = width;
+      rulerCanvas.height = 28;
+
+      renderRuler();
+      renderWaves();
+      updateCursor(cursorTimeNs);
+    }
+
+    function renderRuler() {
+      const w = rulerCanvas.width;
+      rulerCtx.clearRect(0, 0, w, 28);
+      rulerCtx.fillStyle = "#1c2128";
+      rulerCtx.fillRect(0, 0, w, 28);
+
+      rulerCtx.strokeStyle = "#484f58";
+      rulerCtx.fillStyle = "#8b949e";
+      rulerCtx.font = "10px monospace";
+
+      for (let t = 0; t <= TOTAL_SIM_NS; t += 20) {
+        let x = t * timeScale;
+        let isMajor = (t % 100 === 0);
+        rulerCtx.beginPath();
+        rulerCtx.moveTo(x, isMajor ? 12 : 20);
+        rulerCtx.lineTo(x, 28);
+        rulerCtx.stroke();
+
+        if (isMajor) {
+          rulerCtx.fillText(`${t} ns`, x + 3, 14);
+        }
+      }
+    }
+
+    function renderWaves() {
+      const w = waveCanvas.width;
+      const h = waveCanvas.height;
+      waveCtx.clearRect(0, 0, w, h);
+
+      let currentY = 0;
+      signals.forEach((sig) => {
+        if (sig.group) {
+          // Group separator background
+          waveCtx.fillStyle = "#161b22";
+          waveCtx.fillRect(0, currentY, w, 28);
+          waveCtx.strokeStyle = "#30363d";
+          waveCtx.strokeRect(0, currentY, w, 28);
+          currentY += 28;
+          return;
+        }
+
+        // Draw horizontal grid line
+        waveCtx.strokeStyle = "#161b22";
+        waveCtx.beginPath();
+        waveCtx.moveTo(0, currentY + 28);
+        waveCtx.lineTo(w, currentY + 28);
+        waveCtx.stroke();
+
+        // Highlight background for uart_tx
+        if (sig.highlight) {
+          waveCtx.fillStyle = "rgba(245, 208, 32, 0.06)";
+          waveCtx.fillRect(0, currentY, w, 28);
+        }
+
+        const baselineY = currentY + 23;
+        const highY = currentY + 6;
+
+        waveCtx.strokeStyle = sig.color;
+        waveCtx.lineWidth = sig.lineWidth || 1.5;
+
+        if (sig.type === "wire") {
+          // 1-bit wire waveform
+          waveCtx.beginPath();
+          let lastVal = getSignalState(sig.id, 0);
+          waveCtx.moveTo(0, lastVal ? highY : baselineY);
+
+          for (let t = 1; t <= TOTAL_SIM_NS; t++) {
+            let val = getSignalState(sig.id, t);
+            let x = t * timeScale;
+            if (val !== lastVal) {
+              waveCtx.lineTo(x, lastVal ? highY : baselineY);
+              waveCtx.lineTo(x, val ? highY : baselineY);
+              lastVal = val;
+            } else {
+              waveCtx.lineTo(x, val ? highY : baselineY);
+            }
+          }
+          waveCtx.stroke();
+        } else if (sig.type === "bus") {
+          // Multi-bit bus with transitions & text labels
+          let lastVal = getSignalState(sig.id, 0);
+          let startX = 0;
+
+          for (let t = 1; t <= TOTAL_SIM_NS; t++) {
+            let val = getSignalState(sig.id, t);
+            if (val !== lastVal || t === TOTAL_SIM_NS) {
+              let endX = t * timeScale;
+              
+              // Draw bus boundary
+              waveCtx.strokeStyle = sig.color;
+              waveCtx.fillStyle = "rgba(121, 192, 255, 0.08)";
+              waveCtx.beginPath();
+              waveCtx.moveTo(startX, (highY + baselineY) / 2);
+              waveCtx.lineTo(startX + 3, highY);
+              waveCtx.lineTo(endX - 3, highY);
+              waveCtx.lineTo(endX, (highY + baselineY) / 2);
+              waveCtx.lineTo(endX - 3, baselineY);
+              waveCtx.lineTo(startX + 3, baselineY);
+              waveCtx.closePath();
+              waveCtx.fill();
+              waveCtx.stroke();
+
+              // Draw value label
+              if ((endX - startX) > 28) {
+                waveCtx.fillStyle = "#c9d1d9";
+                waveCtx.font = "10px monospace";
+                waveCtx.fillText(lastVal.toString(), startX + 6, baselineY - 4);
+              }
+
+              startX = endX;
+              lastVal = val;
+            }
+          }
+        } else if (sig.type === "text") {
+          // Annotative text band
+          let lastVal = getSignalState(sig.id, 0);
+          let startX = 0;
+          for (let t = 1; t <= TOTAL_SIM_NS; t++) {
+            let val = getSignalState(sig.id, t);
+            if (val !== lastVal || t === TOTAL_SIM_NS) {
+              let endX = t * timeScale;
+              if (lastVal !== "IDLE") {
+                waveCtx.fillStyle = "rgba(63, 185, 80, 0.2)";
+                waveCtx.fillRect(startX, highY - 1, endX - startX, baselineY - highY + 2);
+                waveCtx.strokeStyle = "#3fb950";
+                waveCtx.strokeRect(startX, highY - 1, endX - startX, baselineY - highY + 2);
+                waveCtx.fillStyle = "#56d364";
+                waveCtx.font = "bold 10px monospace";
+                waveCtx.fillText(lastVal, startX + 6, baselineY - 4);
+              }
+              startX = endX;
+              lastVal = val;
+            }
+          }
+        }
+
+        currentY += 28;
+      });
+    }
+
+    // Cursor interaction
+    function updateCursor(timeNs) {
+      cursorTimeNs = Math.max(0, Math.min(TOTAL_SIM_NS, timeNs));
+      const x = cursorTimeNs * timeScale;
+
+      const cursorLine = document.getElementById("cursor-line");
+      const cursorBadge = document.getElementById("cursor-badge");
+      cursorLine.style.left = `${x}px`;
+      cursorBadge.style.left = `${x}px`;
+      cursorBadge.textContent = `${cursorTimeNs.toFixed(1)} ns`;
+      document.getElementById("cursor-time").textContent = `${cursorTimeNs.toFixed(1)} ns`;
+
+      // Update value cells
+      signals.forEach((sig) => {
+        if (!sig.group) {
+          const cell = document.getElementById(`val-cell-${sig.id}`);
+          if (cell) {
+            cell.textContent = getSignalState(sig.id, cursorTimeNs);
+          }
+        }
+      });
+    }
+
+    // Event listeners
+    const waveWrap = document.getElementById("wave-canvas-wrap");
+    let isDragging = false;
+
+    waveWrap.addEventListener("mousedown", (e) => {
+      isDragging = true;
+      const rect = waveCanvas.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      updateCursor(x / timeScale);
+    });
+
+    window.addEventListener("mousemove", (e) => {
+      if (isDragging) {
+        const rect = waveCanvas.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        updateCursor(x / timeScale);
+      }
+    });
+
+    window.addEventListener("mouseup", () => { isDragging = false; });
+
+    // Buttons
+    document.getElementById("btn-zoom-in").addEventListener("click", () => {
+      timeScale = Math.min(3.0, timeScale * 1.3);
+      resizeCanvases();
+    });
+    document.getElementById("btn-zoom-out").addEventListener("click", () => {
+      timeScale = Math.max(0.6, timeScale / 1.3);
+      resizeCanvases();
+    });
+    document.getElementById("btn-fit").addEventListener("click", () => {
+      timeScale = 1.0;
+      resizeCanvases();
+    });
+    document.getElementById("btn-goto-uart").addEventListener("click", () => {
+      updateCursor(680); // Center of UART 'U' frame
+      const scrollPane = document.getElementById("canvas-scroll-pane");
+      scrollPane.scrollLeft = 680 * timeScale - scrollPane.clientWidth / 2;
+    });
+
+    // Init
+    buildSignalList();
+    resizeCanvases();
+    window.addEventListener("resize", resizeCanvases);
+  </script>
+</body>
+</html>

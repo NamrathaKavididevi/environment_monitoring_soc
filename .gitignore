@@ -1,0 +1,11 @@
+# Vivado / EDA simulation artifacts
+xsim.dir/
+*.jou
+*.log
+*.pb
+*.wdb
+dfx_runtime.txt
+
+# OS artifacts
+.DS_Store
+Thumbs.db

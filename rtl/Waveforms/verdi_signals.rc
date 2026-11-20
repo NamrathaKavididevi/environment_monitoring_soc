@@ -1,0 +1,62 @@
+; =============================================================================
+; Synopsys Verdi Signal Definition File: verdi_signals.rc
+; Project : RTL-Based Environmental Monitoring and Data-Logging SoC
+; Test    : Bare-Metal C-Test (ctest.hex execution)
+; =============================================================================
+
+Magic 271485
+Revision Verdi_U-2023.03-SP1
+
+; --- Group 1: System Clocks & Control ---
+addGroup "1. CLK & RESET"
+addSignal -h 15 /top_level_tb/clk
+addSignal -h 15 /top_level_tb/rst_n
+addSignal -h 15 -HEX /top_level_tb/rst_vec[31:1]
+
+; --- Group 2: Processor Instruction Fetch (Unified SRAM @ 0x0000_0000) ---
+addGroup "2. PROCESSOR IFU & PC"
+addSignal -h 15 -HEX /top_level_tb/dut/u_veer_core/pc_reg[31:0]
+addSignal -h 15 -HEX /top_level_tb/dut/u_veer_core/ifu_axi_araddr[31:0]
+addSignal -h 15 /top_level_tb/dut/u_veer_core/ifu_axi_arvalid
+addSignal -h 15 /top_level_tb/dut/u_veer_core/ifu_axi_arready
+addSignal -h 15 -HEX /top_level_tb/dut/u_veer_core/ifu_axi_rdata[31:0]
+addSignal -h 15 /top_level_tb/dut/u_veer_core/ifu_axi_rvalid
+
+; --- Group 3: Processor LSU / AXI4 Interconnect ---
+addGroup "3. PROCESSOR LSU & INTERCONNECT"
+addSignal -h 15 -HEX /top_level_tb/dut/u_veer_core/lsu_axi_awaddr[31:0]
+addSignal -h 15 /top_level_tb/dut/u_veer_core/lsu_axi_awvalid
+addSignal -h 15 -HEX /top_level_tb/dut/u_veer_core/lsu_axi_wdata[31:0]
+addSignal -h 15 /top_level_tb/dut/u_veer_core/lsu_axi_wvalid
+addSignal -h 15 -HEX /top_level_tb/dut/u_veer_core/lsu_axi_bresp[1:0]
+addSignal -h 15 /top_level_tb/dut/u_veer_core/lsu_axi_bvalid
+
+; --- Group 4: UART Registers (Slave S01 @ 0x4000_0000) ---
+addGroup "4. UART REGISTERS (0x4000_0000)"
+addSignal -h 15 -HEX /top_level_tb/dut/u_uart/s_axi_awaddr[31:0]
+addSignal -h 15 -HEX /top_level_tb/dut/u_uart/s_axi_wdata[31:0]
+addSignal -h 15 /top_level_tb/dut/u_uart/s_axi_wvalid
+addSignal -h 15 -HEX /top_level_tb/dut/u_uart/reg_baud_div[15:0]
+addSignal -h 15 /top_level_tb/dut/u_uart/reg_tx_en
+addSignal -h 15 /top_level_tb/dut/u_uart/tx_busy
+addSignal -h 15 /top_level_tb/dut/u_uart/tx_empty
+
+; --- Group 5: UART Transmitter Output & Bitstream (KEY CHECKPOINT) ---
+addGroup "5. UART TRANSMITTER OUTPUT"
+addSignal -h 15 -HEX /top_level_tb/dut/u_uart/tx_byte_in[7:0]
+addSignal -h 15 -HEX /top_level_tb/dut/u_uart/tx_shift_reg[7:0]
+addSignal -h 15 -HEX /top_level_tb/dut/u_uart/tx_bit_idx[3:0]
+addSignal -h 15 -COLOR 2 /top_level_tb/uart_tx
+addSignal -h 15 /top_level_tb/uart_irq
+
+; --- Group 6: Environmental Closed-Loop Peripherals ---
+addGroup "6. CLOSED-LOOP STATUS & PERIPHERALS"
+addSignal -h 15 -HEX /top_level_tb/gpio_out[7:0]
+addSignal -h 15 -COLOR 3 /top_level_tb/sample_tick
+addSignal -h 15 /top_level_tb/irq_timer
+addSignal -h 15 -COLOR 4 /top_level_tb/pwm_out
+addSignal -h 15 /top_level_tb/spi_cs_n
+addSignal -h 15 /top_level_tb/spi_sclk
+addSignal -h 15 /top_level_tb/spi_mosi
+addSignal -h 15 /top_level_tb/scl
+addSignal -h 15 /top_level_tb/sda
